@@ -80,10 +80,16 @@ public class UF_HWQUPC implements UF {
      */
     public int find(int p) {
         validate(p);
-        int root = p;
-        // FIXME
-        // END 
-        return root;
+        while (p != parent[p])
+            p = parent[p];
+        if (!pathCompression) {
+        	System.out.println("XXX");
+        	return p;
+        }
+       
+        doPathCompression(p);
+        return p;
+
     }
 
     /**
@@ -111,7 +117,10 @@ public class UF_HWQUPC implements UF {
      */
     public void union(int p, int q) {
         // CONSIDER can we avoid doing find again?
+//        mergeComponents(find(p), find(q));
+//        count--;
         mergeComponents(find(p), find(q));
+
         count--;
     }
 
@@ -166,11 +175,19 @@ public class UF_HWQUPC implements UF {
     private final int[] parent;   // parent[i] = parent of i
     private final int[] height;   // height[i] = height of subtree rooted at i
     private int count;  // number of components
-    private boolean pathCompression;
+    private boolean pathCompression = false;
 
     private void mergeComponents(int i, int j) {
-        // FIXME make shorter root point to taller one
-        // END 
+        if (i == j)
+            return;
+
+        // make shorter root point to taller one
+        if      (height[i] < height[j]) parent[i] = j;
+        else if (height[i] > height[j]) parent[j] = i;
+        else {
+            parent[j] = i;
+            height[i]++;
+        }
     }
 
     /**
@@ -179,5 +196,6 @@ public class UF_HWQUPC implements UF {
     private void doPathCompression(int i) {
         // FIXME update parent to value of grandparent
         // END 
+    	updateParent(i,i);
     }
 }
