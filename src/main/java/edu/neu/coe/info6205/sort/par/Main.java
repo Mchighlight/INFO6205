@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.concurrent.ForkJoinPool;
 
 /**
@@ -19,28 +20,28 @@ public class Main {
     public static void main(String[] args) {
         processArgs(args);
         System.out.println("Degree of parallelism: " + ForkJoinPool.getCommonPoolParallelism());
-        Random random = new Random();
-        int[] array = new int[2000000];
         ArrayList<Long> timeList = new ArrayList<>();
-        for (int j = 50; j < 100; j++) {
-            ParSort.cutoff = 10000 * (j + 1);
-            // for (int i = 0; i < array.length; i++) array[i] = random.nextInt(10000000);
-            long time;
-            long startTime = System.currentTimeMillis();
-            for (int t = 0; t < 10; t++) {
-                for (int i = 0; i < array.length; i++) array[i] = random.nextInt(10000000);
-                ParSort.sort(array, 0, array.length);
-            }
-            long endTime = System.currentTimeMillis();
-            time = (endTime - startTime);
-            timeList.add(time);
+        for(int l=0;l<10;l++){
+            System.out.println("Enter cut off value");
+            Scanner in = new Scanner(System.in);
+            int n = in.nextInt();
+            Random random = new Random(0L);
+            int[] array = new int[64000];
+            for (int i = 0; i < array.length; i++) array[i] = random.nextInt(64000);
+            long t1=System.nanoTime();
+            ParSort.sort(array, 0, array.length-1,n);
+       
+            System.out.println( "Thread count: "+java.lang.Thread.activeCount());
+            long t2=System.nanoTime();
+            long totalTime=t2-t1;
+            timeList.add(totalTime);
+            System.out.println("Total time taken in ms:"+totalTime/1000000);
 
-
-            System.out.println("cutoff：" + (ParSort.cutoff) + "\t\t10times Time:" + time + "ms");
-
+            if (array[0]==11) System.out.println("Success!");
         }
+    	
         try {
-            FileOutputStream fis = new FileOutputStream("./src/result.csv");
+            FileOutputStream fis = new FileOutputStream("./assignment_report/assignment4/assignment4_results.csv");
             OutputStreamWriter isr = new OutputStreamWriter(fis);
             BufferedWriter bw = new BufferedWriter(isr);
             int j = 0;
